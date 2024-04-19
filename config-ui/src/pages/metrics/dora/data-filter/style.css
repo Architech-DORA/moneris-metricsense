@@ -1,0 +1,202 @@
+.bp5-popover {
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px rgba(17, 20, 24, 0.1), 0 2px 4px rgba(17, 20, 24, 0.2), 0 8px 24px rgba(17, 20, 24, 0.2);
+  display: inline-block;
+  transform: scale(1);
+  z-index: 20;
+  border-radius: 5px;
+}
+
+.bp5-popover-content {
+  background: #fff;
+  padding: 2px;
+  border-radius: 5px;
+}
+
+.bp5-tag-input.bp5-active,
+.bp5-tag-input.bp5-active.bp5-intent-primary {
+  box-shadow: inset 0 0 0 1px #2d72d2, 0 0 0 2px rgba(45, 114, 210, 0.3), inset 0 1px 1px rgba(17, 20, 24, 0.2);
+}
+
+.bp5-tag-input.bp5-active {
+  background-color: #fff;
+}
+.bp5-input.bp5-active,
+.bp5-input:focus {
+  box-shadow: inset 0 0 0 1px #2d72d2, 0 0 0 2px rgba(45, 114, 210, 0.3), inset 0 1px 1px rgba(17, 20, 24, 0.2);
+}
+.bp5-multi-select {
+  min-width: 150px;
+}
+.bp5-tag-input {
+  align-items: flex-start;
+  cursor: text;
+  display: flex;
+  flex-direction: row;
+  height: auto;
+  line-height: inherit;
+  min-height: 30px;
+  padding-left: 5px;
+  padding-right: 0;
+}
+.bp5-input {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background: #fff;
+  border: none;
+  border-radius: 2px;
+  box-shadow: 0 0 0 0 rgba(45, 114, 210, 0), 0 0 0 0 rgba(45, 114, 210, 0), inset 0 0 0 1px rgba(17, 20, 24, 0.2),
+    inset 0 1px 1px rgba(17, 20, 24, 0.3);
+  color: #1c2127;
+  font-size: 14px;
+  font-weight: 400;
+  height: 30px;
+  line-height: 30px;
+  outline: none;
+  padding: 0 10px;
+  transition: box-shadow 0.1s cubic-bezier(0.4, 1, 0.75, 0.9);
+  vertical-align: middle;
+}
+
+.bp5-tag-input .bp5-tag-input-values:first-child .bp5-tag ~ .bp5-input-ghost {
+  padding-left: 0;
+}
+.bp5-tag-input .bp5-tag-input-values:first-child .bp5-input-ghost {
+  padding-left: 5px;
+}
+.bp5-tag-input .bp5-tag-input-values:empty:before,
+.bp5-tag-input .bp5-tag-input-values > :last-child {
+  margin-right: 0;
+}
+.bp5-tag-input .bp5-input-ghost {
+  flex: 1 1 auto;
+  line-height: 20px;
+  width: 80px;
+}
+.bp5-tag-input .bp5-tag-input-values > * {
+  margin-bottom: 5px;
+}
+.bp5-tag-input .bp5-tag-input-values:before,
+.bp5-tag-input .bp5-tag-input-values > * {
+  margin-right: 5px;
+}
+.bp5-tag-input .bp5-tag-input-values > * {
+  flex-grow: 0;
+  flex-shrink: 0;
+}
+.bp5-input-ghost {
+  background: none;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+}
+
+.bp5-focus-disabled :focus:not(.bp5-focus-style-manager-ignore *),
+.bp5-focus-disabled :focus:not(.bp5-focus-style-manager-ignore *) ~ .bp5-control-indicator {
+  outline: none !important;
+}
+
+bp5-input-ghost:focus,
+.bp5-multi-select-tag-input-input:focus {
+  outline: none !important;
+}
+
+.bp5-tag-input .bp5-tag {
+  overflow-wrap: break-word;
+}
+.bp5-tag-input .bp5-tag-input-values > * {
+  margin-bottom: 5px;
+}
+.bp5-tag-input .bp5-tag-input-values:before,
+.bp5-tag-input .bp5-tag-input-values > * {
+  margin-right: 5px;
+}
+.bp5-tag-input .bp5-tag-input-values > * {
+  flex-grow: 0;
+  flex-shrink: 0;
+}
+.bp5-tag {
+  align-items: center;
+  background-color: #5f6b7c;
+  border: none;
+  border-radius: 2px;
+  box-shadow: none;
+  color: #fff;
+  display: inline-flex;
+  flex-direction: row;
+  font-size: 12px;
+  line-height: 16px;
+  max-width: 100%;
+  min-height: 20px;
+  min-width: 20px;
+  padding: 2px 6px;
+  position: relative;
+}
+
+.bp5-tag > .bp5-fill {
+  flex-grow: 1;
+  flex-shrink: 1;
+}
+.bp5-tag:before,
+.bp5-tag > * {
+  margin-right: 4px;
+}
+.bp5-tag > * {
+  flex-grow: 0;
+  flex-shrink: 0;
+}
+.bp5-text-overflow-ellipsis {
+  word-wrap: normal;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bp5-tag-input .bp5-tag-input-values {
+  align-items: center;
+  align-self: stretch;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin-right: 7px;
+  margin-top: 5px;
+  min-width: 0;
+  position: relative;
+}
+.bp5-tag-input > .bp5-tag-input-values {
+  flex-grow: 1;
+  flex-shrink: 1;
+}
+.bp5-tag-input > * {
+  flex-grow: 0;
+  flex-shrink: 0;
+}
+
+.bp5-tag-remove {
+  background: none;
+  border: none;
+  color: hsla(0, 0%, 100%, 0.7);
+  cursor: pointer;
+  display: flex;
+  margin-bottom: -2px;
+  margin-right: -6px !important;
+  margin-top: -2px;
+  padding: 2px 2px 2px 0;
+}
+
+.bp5-tag:before,
+.bp5-tag > * {
+  margin-right: 4px;
+}
+.bp5-tag > * {
+  flex-grow: 0;
+  flex-shrink: 0;
+}
+.bp5-tag-remove .bp5-icon:first-child {
+  color: inherit;
+}
+
+.bp5-icon > svg:not([fill]) {
+  fill: currentcolor;
+}
