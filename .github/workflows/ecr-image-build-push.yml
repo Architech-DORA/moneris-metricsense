@@ -16,7 +16,7 @@ permissions:
 jobs:
   build-and-push-builder:
     name: Build and Push devlake builder
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -57,7 +57,7 @@ jobs:
 
   build-and-push-base:
     name: Build and Push moneris-devlake base
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -155,7 +155,7 @@ jobs:
   build-and-push-devlake:
     needs: [build-devlake, build-and-push-base]
     name: Build and Push devlake image
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -242,7 +242,7 @@ jobs:
 
   build-and-push-other-image:
     name: Build and Push ${{ matrix.build.name }} image
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     strategy:
       matrix:
         build:
