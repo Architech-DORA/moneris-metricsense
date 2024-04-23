@@ -36,18 +36,7 @@ export const adfDeploymentConfig: PluginConfigType = {
       ({ initialValues, values, errors, setValues, setErrors, setValuesDefault }: any) => (
         <Auth
           key="auth"
-          initialValues={{
-            ...initialValues,
-            credentials: {
-              providerType: 'azure',
-              subscriptionID: '',
-              clientID: '',
-              clientSecret: '',
-              tenantID: '',
-              resourceGroupName: '',
-              factoryName: ''
-            }
-          }}
+          initialValues={initialValues}
           values={values}
           errors={errors}
           setValues={setValues}

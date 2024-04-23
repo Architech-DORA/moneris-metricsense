@@ -111,7 +111,7 @@ func (p AdfDeployment) PrepareTaskData(taskCtx plugin.TaskContext, options map[s
 	if errUnmarshall != nil {
 		return nil, errors.Default.Wrap(err, "Error unmarshalling message")
 	}
-	adfClient, err := adfDeploymentHelper.NewAdfApiClient(adfAPIClientParams)
+	adfClient, err := adfDeploymentHelper.NewKubeApiClient(adfAPIClientParams)
 
 	if err != nil {
 		return nil, err

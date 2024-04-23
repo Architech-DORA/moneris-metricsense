@@ -48,11 +48,7 @@ func LoadPlugins(basicRes context.BasicRes) errors.Error {
 func LoadGoPlugins(basicRes context.BasicRes) errors.Error {
 	pluginsDir := basicRes.GetConfig("PLUGIN_DIR")
 	walkErr := filepath.WalkDir(pluginsDir, func(path string, d fs.DirEntry, err error) error {
-		basicRes.GetLogger().Info("***********************")
-		basicRes.GetLogger().Info("***********************")
-		basicRes.GetLogger().Info("***********************")
-		basicRes.GetLogger().Info("***********************")
-		basicRes.GetLogger().Info("***********************", path)
+
 		if err != nil {
 			return err
 		}
@@ -81,12 +77,6 @@ func LoadGoPlugins(basicRes context.BasicRes) errors.Error {
 			if err != nil {
 				return err
 			}
-
-			basicRes.GetLogger().Info(`****************`)
-			basicRes.GetLogger().Info(`****************`)
-			basicRes.GetLogger().Info(`****************`)
-			basicRes.GetLogger().Info(`****************`)
-			basicRes.GetLogger().Info(`****************`)
 			basicRes.GetLogger().Info(`plugin loaded %s`, pluginName)
 		}
 		return nil

@@ -18,7 +18,6 @@ limitations under the License.
 package api
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -29,7 +28,6 @@ import (
 	adfDeploymentHelper "github.com/apache/incubator-devlake/plugins/adf_deployment/helper"
 	"github.com/apache/incubator-devlake/plugins/adf_deployment/models"
 	"github.com/apache/incubator-devlake/server/api/shared"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 type AdfDeploymentTestConnResponse struct {
@@ -58,18 +56,17 @@ func TestConnection(input *plugin.ApiResourceInput) (*plugin.ApiResourceOutput, 
 	body.Success = true
 	body.Message = "success"
 	body.Connection = nil
-	
 
-	//credentialsInput, ok := input.Body["credentials"].(map[string]interface{})
+	credentialsInput, ok := input.Body["credentials"].(map[string]interface{})
 
-	// if ok {
-	// 	_, err := adfDeploymentHelper.NewAdfApiClient(credentialsInput)
-	// 	if err != nil {
-	// 		body.Success = false
-	// 		body.Message = "Unable to establish connection to Kubernetes cluster"
-	// 		return &plugin.ApiResourceOutput{Body: body, Status: 400}, nil
-	// 	}
-	// }
+	if ok {
+		_, err := adfDeploymentHelper.NewAdfApiClient(credentialsInput)
+		if err != nil {
+			body.Success = false
+			body.Message = "Unable to establish connection to ADF"
+			return &plugin.ApiResourceOutput{Body: body, Status: 400}, nil
+		}
+	}
 
 	// output
 	return &plugin.ApiResourceOutput{Body: body, Status: 200}, nil
@@ -234,43 +231,10 @@ func GetConnection(input *plugin.ApiResourceInput) (*plugin.ApiResourceOutput, e
 // @Router /plugins/adf_deployment/connections/{connectionId}/namespaces [GET]
 func GetNameSpaces(input *plugin.ApiResourceInput) (*plugin.ApiResourceOutput, errors.Error) {
 	fmt.Println("input.Params: -->", input.Params)
-	connection := &models.AdfConnection{}
-	err := connectionHelper.First(connection, input.Params)
+	
+	body := AdfDeploymentTestConnResponse{}
 
-	if err != nil {
-		return nil, errors.Default.Wrap(err, "unable to get AdfDeployment API client instance")
-	}
-
-	var credentials map[string]interface{}
-	unmarshalErr := json.Unmarshal([]byte(connection.Credentials), &credentials)
-	if unmarshalErr != nil {
-		return nil, errors.BadInput.New("credentials is not a valid json")
-	}
-
-	AdfAPIClient, err := adfDeploymentHelper.NewAdfApiClient(credentials)
-
-	if err != nil {
-		body := AdfDeploymentTestConnResponse{}
-
-		body.Success = false
-		body.Message = "Unable to establish connection to Kubernetes cluster"
-		return &plugin.ApiResourceOutput{Body: body, Status: 400}, nil
-	}
-
-	// Get the list of namespaces
-	namespaces, _ := AdfAPIClient.ClientSet.CoreV1().Namespaces().List(context.TODO(), metav1.ListOptions{})
-	if err != nil {
-		fmt.Printf("Failed to get namespaces: %v", err)
-	}
-
-	var namespaceList = make([]string, len(namespaces.Items))
-
-	for i, namespace := range namespaces.Items {
-		fmt.Println(namespace.Name)
-		namespaceList[i] = namespace.Name
-	}
-
-	return &plugin.ApiResourceOutput{Body: namespaceList, Status: http.StatusOK}, nil
+	return &plugin.ApiResourceOutput{Body: body, Status: http.StatusOK}, nil
 }
 
 // @Summary Get kubernetes namespaces
@@ -283,47 +247,7 @@ func GetNameSpaces(input *plugin.ApiResourceInput) (*plugin.ApiResourceOutput, e
 func GetDeployments(input *plugin.ApiResourceInput) (*plugin.ApiResourceOutput, errors.Error) {
 	fmt.Println("input.Params: -->", input.Params)
 
-	connectionParam := make(map[string]string)
-	connectionParam["connectionId"] = input.Params["connectionId"]
+	body := AdfDeploymentTestConnResponse{}
 
-	connection := &models.AdfConnection{}
-	err := connectionHelper.First(connection, connectionParam)
-
-	if err != nil {
-		return nil, errors.Default.Wrap(err, "unable to get AdfDeployment API client instance")
-	}
-
-	var credentials map[string]interface{}
-	unmarshalErr := json.Unmarshal([]byte(connection.Credentials), &credentials)
-
-	if unmarshalErr != nil {
-		return nil, errors.BadInput.New("credentials is not a valid json")
-	}
-
-	AdfAPIClient, err := adfDeploymentHelper.NewAdfApiClient(credentials)
-
-	if err != nil {
-		body := AdfDeploymentTestConnResponse{}
-
-		body.Success = false
-		body.Message = "Unable to establish connection to Kubernetes cluster"
-		return &plugin.ApiResourceOutput{Body: body, Status: 400}, nil
-	}
-
-	namespace := input.Params["namespace"]
-
-	// Get the list of namespaces
-	deployments, _ := AdfAPIClient.ClientSet.AppsV1().Deployments(namespace).List(context.TODO(), metav1.ListOptions{})
-	if err != nil {
-		return nil, errors.Default.Wrap(err, "unable to get deployments")
-	}
-
-	var deploymentList = make([]string, len(deployments.Items))
-
-	for i, deployment := range deployments.Items {
-		fmt.Println(deployment.Name)
-		deploymentList[i] = deployment.Name
-	}
-
-	return &plugin.ApiResourceOutput{Body: deploymentList, Status: http.StatusOK}, nil
+	return &plugin.ApiResourceOutput{Body: body, Status: http.StatusOK}, nil
 }

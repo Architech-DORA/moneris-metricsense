@@ -22,6 +22,8 @@ import (
 	"fmt"
 
 	"github.com/Azure/azure-sdk-for-go/profiles/latest/containerservice/mgmt/containerservice"
+
+	"github.com/Azure/azure-sdk-for-go/profiles/latest/datafactory/mgmt/datafactory"
 	"github.com/Azure/go-autorest/autorest/azure/auth"
 	"github.com/apache/incubator-devlake/core/errors"
 	"k8s.io/client-go/kubernetes"
@@ -29,7 +31,7 @@ import (
 )
 
 type AdfApiClient struct {
-	ClientSet *kubernetes.Clientset
+	Client *datafactory.FactoriesClient
 }
 
 func (k *AdfApiClient) TestConnection() error {
@@ -37,7 +39,37 @@ func (k *AdfApiClient) TestConnection() error {
 	return nil
 }
 
+type AdfApiClientSet struct {
+	ClientSet *kubernetes.Clientset
+}
+
 func NewAdfApiClient(credentials map[string]interface{}) (*AdfApiClient, errors.Error) {
+	fmt.Println("credentials: ", credentials)
+	providerType, ok := credentials["providerType"].(string)
+
+	if providerType == "" || !ok {
+		err := errors.BadInput.New("providerType is not defined")
+		return nil, err
+	}
+
+	var adfApiClient *datafactory.FactoriesClient
+	var err errors.Error
+
+	if providerType == "azure" {
+		fmt.Println("Creating Azure ADF Client")
+		adfApiClient, err = createAzureClientConfig(credentials)
+
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return &AdfApiClient{
+		Client: adfApiClient,
+	}, nil
+}
+
+func NewKubeApiClient(credentials map[string]interface{}) (*AdfApiClientSet, errors.Error) {
 	println("credentials: ", credentials)
 	providerType, ok := credentials["providerType"].(string)
 
@@ -51,7 +83,7 @@ func NewAdfApiClient(credentials map[string]interface{}) (*AdfApiClient, errors.
 
 	if providerType == "azure" {
 		fmt.Println("Creating Azure ADF Client")
-		adfApiClient, err = createAzureClientConfig(credentials)
+		adfApiClient, err = createKubeClientConfig(credentials)
 
 		if err != nil {
 			return nil, err
@@ -65,12 +97,44 @@ func NewAdfApiClient(credentials map[string]interface{}) (*AdfApiClient, errors.
 		}
 	}
 
-	return &AdfApiClient{
+	return &AdfApiClientSet{
 		ClientSet: adfApiClient,
 	}, nil
 }
 
-func createAzureClientConfig(creds map[string]interface{}) (*kubernetes.Clientset, errors.Error) {
+func createAzureClientConfig(creds map[string]interface{}) (*datafactory.FactoriesClient, errors.Error) {
+	clientID := creds["clientID"].(string)
+	clientSecret := creds["clientSecret"].(string)
+	tenantID := creds["tenantID"].(string)
+	subscriptionID := creds["subscriptionID"].(string)
+	factoryName := creds["factoryName"].(string)
+	resourceGroupName := creds["resourceGroupName"].(string)
+
+	authorizer, err := auth.NewClientCredentialsConfig(clientID, clientSecret, tenantID).Authorizer()
+	if err != nil {
+		panic(err.Error())
+	}
+
+	dataFactoryClient := datafactory.NewFactoriesClient(subscriptionID)
+	dataFactoryClient.Authorizer = authorizer
+
+
+	df, err := dataFactoryClient.Get(context.Background(), resourceGroupName, factoryName, "")
+	if err != nil {
+		return nil, errors.Default.New("Unable to establish connection to Azure Data Factory Resource Group")
+	}
+
+
+	fmt.Printf("Data Factory Name: %v\n", *df.Name)
+	fmt.Printf("Data Factory ID: %v\n", *df.ID)
+
+	
+
+	return &dataFactoryClient, nil
+}
+
+
+func createKubeClientConfig(creds map[string]interface{}) (*kubernetes.Clientset, errors.Error) {
 	clientID := creds["clientID"].(string)
 	clientSecret := creds["clientSecret"].(string)
 	tenantID := creds["tenantID"].(string)
@@ -119,6 +183,7 @@ func createAzureClientConfig(creds map[string]interface{}) (*kubernetes.Clientse
 
 	return clientSet, nil
 }
+
 
 func createClientConfig() (*kubernetes.Clientset, errors.Error) {
 	kubeConfig := "~/.kube/config"

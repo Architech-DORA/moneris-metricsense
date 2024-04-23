@@ -47,7 +47,7 @@ type AdfDeploymentOptions struct {
 type AdfDeploymentTaskData struct {
 	Options          *AdfDeploymentOptions
 	ApiClient        *helper.ApiAsyncClient
-	AdfAPIClient    *adfDeploymentHelper.AdfApiClient
+	AdfAPIClient    *adfDeploymentHelper.AdfApiClientSet
 	CreatedDateAfter *time.Time
 }
 

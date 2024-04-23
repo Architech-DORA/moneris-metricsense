@@ -95,6 +95,16 @@ export const Auth = ({ initialValues, values, errors, setValues, setErrors, setV
     }));
   }, []);
 
+  // setInitialValues
+  useEffect(() => {
+    if (initialValues.credentials?.providerType === 'azure') {
+      setValuesDefault((prev) => ({
+        ...prev,
+        credentials: initialValues.credentials,
+      }));
+    }
+  }, [initialValues.credentials]);
+
   return (
     <>
       {values.credentials?.providerType === 'azure' && (

@@ -101,6 +101,8 @@ func CollectAdfDeploymentRevision(taskCtx plugin.SubTaskContext) errors.Error {
 		}
 	}
 
+	
+
 	// Get the rollout history of the deployment
 	rolloutHistory, err := data.AdfAPIClient.ClientSet.AppsV1().ReplicaSets(data.Options.Namespace).List(context.TODO(), metav1.ListOptions{
 		LabelSelector: fmt.Sprintf("app=%s", data.Options.DeploymentName),
