@@ -28,21 +28,21 @@ var _ plugin.MigrationScript = (*addNamespaceRevisionToDeploymentRevision)(nil)
 
 type addNamespaceRevisionToDeploymentRevision struct{}
 
-type deployment_revision20230606 struct {
+type deployment_revision20240606 struct {
 	Namespace      string `gorm:"type:varchar(255)"`
 	RevisionNumber int32
 }
 
-func (deployment_revision20230606) TableName() string {
+func (deployment_revision20240606) TableName() string {
 	return "_tool_adf_deployment_revisions"
 }
 
 func (u *addNamespaceRevisionToDeploymentRevision) Up(baseRes context.BasicRes) errors.Error {
-	return migrationhelper.AutoMigrateTables(baseRes, &deployment_revision20230606{})
+	return migrationhelper.AutoMigrateTables(baseRes, &deployment_revision20240606{})
 }
 
 func (*addNamespaceRevisionToDeploymentRevision) Version() uint64 {
-	return 20230606160400
+	return 20240424133645
 }
 
 func (*addNamespaceRevisionToDeploymentRevision) Name() string {

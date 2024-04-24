@@ -28,7 +28,7 @@ interface Props {
   onChangeItems: (selectedItems: ScopeItemType[]) => void;
 }
 
-export const KubeDeploymentDataScope = ({ connectionId, selectedItems, onChangeItems }: Props) => {
+export const AdfPipelineDataScope = ({ connectionId, selectedItems, onChangeItems }: Props) => {
   return (
     <>
       <h3>Deployments *</h3>

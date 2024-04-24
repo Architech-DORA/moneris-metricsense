@@ -65,14 +65,14 @@ export const useMillerColumns = ({ connectionId }: UseMillerColumnsProps) => {
 
   useEffect(() => {
     (async () => {
-      const res = await API.getAdfNamespaces(customPrefix);
+      const res = await API.getAdfPipelines(customPrefix);
       setItems(formatNamespaceItems(res));
     })();
   }, [customPrefix]);
 
   const onExpand = useCallback(
     async (id: McsID) => {
-      const res = await API.getAdfDeployments(`${customPrefix}/${id}`);
+      const res = await API.getAdfPipelineRuns(`${customPrefix}/${id}`);
 
       const loaded = !res.length || res.length < DEFAULT_PAGE_SIZE;
       setLoaded(loaded, id, 2);

@@ -28,20 +28,20 @@ var _ plugin.MigrationScript = (*addCicdScopeIdToDeploymentRevision)(nil)
 
 type addCicdScopeIdToDeploymentRevision struct{}
 
-type deployment_revision20230609 struct {
+type deployment_revision20240609 struct {
 	CicdScopeId string `gorm:"index;type:varchar(255)"`
 }
 
-func (deployment_revision20230609) TableName() string {
+func (deployment_revision20240609) TableName() string {
 	return "_tool_adf_deployment_revisions"
 }
 
 func (u *addCicdScopeIdToDeploymentRevision) Up(baseRes context.BasicRes) errors.Error {
-	return migrationhelper.AutoMigrateTables(baseRes, &deployment_revision20230609{})
+	return migrationhelper.AutoMigrateTables(baseRes, &deployment_revision20240609{})
 }
 
 func (*addCicdScopeIdToDeploymentRevision) Version() uint64 {
-	return 20230609131400
+	return 20240424133645
 }
 
 func (*addCicdScopeIdToDeploymentRevision) Name() string {

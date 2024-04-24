@@ -39,7 +39,7 @@ func (u *addDataScopeDeploymentTable) Up(basicRes context.BasicRes) errors.Error
 }
 
 func (*addDataScopeDeploymentTable) Version() uint64 {
-	return 20230525104600
+	return 20240424133645
 }
 
 func (*addDataScopeDeploymentTable) Name() string {

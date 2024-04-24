@@ -18,6 +18,6 @@
 
 import { request } from '@/utils';
 
-export const getAdfDeployments = (prefix: string) => request(`${prefix}/deployments`);
+export const getAdfPipelines = (prefix: string) => request(`${prefix}/pipelines`);
 
-export const getAdfNamespaces = (prefix: string) => request(`${prefix}/namespaces`);
+export const getAdfPipelineRuns = (prefix: string) => request(`${prefix}/pipelineruns`);

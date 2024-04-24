@@ -33,6 +33,7 @@ import { SonarQubeDataScope } from '@/plugins/register/sonarqube';
 import { PagerDutyDataScope } from '@/plugins/register/pagerduty';
 import { ZentaoDataScope } from '@/plugins/register/zentao';
 import { KubeDeploymentDataScope } from '@/plugins/register/myplug';
+import { AdfPipelineDataScope } from '@/plugins/register/azure_data_factory';
 
 import * as API from './api';
 import * as S from './styled';
@@ -131,6 +132,10 @@ export const DataScopeForm = ({
 
           {plugin === 'kube_deployment' && (
             <KubeDeploymentDataScope connectionId={connectionId} selectedItems={scope} onChangeItems={setScope} />
+          )}
+
+          {plugin === 'adf_deployment' && (
+            <AdfPipelineDataScope connectionId={connectionId} selectedItems={scope} onChangeItems={setScope} />
           )}
 
           {plugin === 'jira' && (
