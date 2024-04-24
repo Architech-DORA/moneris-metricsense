@@ -18,17 +18,12 @@ limitations under the License.
 package api
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strconv"
-	"time"
 
-	"github.com/Azure/azure-sdk-for-go/profiles/latest/datafactory/mgmt/datafactory"
 	"github.com/apache/incubator-devlake/core/errors"
 
-	"github.com/Azure/go-autorest/autorest/date"
 	"github.com/apache/incubator-devlake/core/plugin"
 	adfDeploymentHelper "github.com/apache/incubator-devlake/plugins/adf_deployment/helper"
 	"github.com/apache/incubator-devlake/plugins/adf_deployment/models"
@@ -44,13 +39,6 @@ type ReturnObject struct {
 	models.AdfConnection `mapstructure:",squash"`
 	Credentials           map[string]interface{} `mapstructure:"credentials" json:"credentials"`
 }
-
-type PipelineRunReturnObject struct {
-	ID string
-	Status string
-}
-
-
 
 // @Summary test adf_deployment connection
 // @Description Test adf_deployment Connection. endpoint: "https://dev.adf_deployment.com/{organization}/
@@ -72,28 +60,13 @@ func TestConnection(input *plugin.ApiResourceInput) (*plugin.ApiResourceOutput, 
 	credentialsInput, ok := input.Body["credentials"].(map[string]interface{})
 
 	if ok {
-		adfApiClient, err := adfDeploymentHelper.NewAdfApiClient(credentialsInput)
+		_, err := adfDeploymentHelper.NewAdfApiClient(credentialsInput)
 		if err != nil {
 			body.Success = false
 			body.Message = "Unable to establish connection to ADF"
 			return &plugin.ApiResourceOutput{Body: body, Status: 400}, nil
 		}
-
-		factoryName := credentialsInput["factoryName"].(string)
-		resourceGroupName := credentialsInput["resourceGroupName"].(string)		
-
-		df, dfError := adfApiClient.Client.Get(context.Background(), resourceGroupName, factoryName, "")
-		if dfError != nil {
-			body.Success = false
-			body.Message = "Unable to establish connection to ADF"
-			return &plugin.ApiResourceOutput{Body: body, Status: 400}, nil
-		}
-		fmt.Printf("Data Factory Name: %v\n", *df.Name)
-		fmt.Printf("Data Factory ID: %v\n", *df.ID)
-
 	}
-
-	
 
 	// output
 	return &plugin.ApiResourceOutput{Body: body, Status: 200}, nil
@@ -249,162 +222,32 @@ func GetConnection(input *plugin.ApiResourceInput) (*plugin.ApiResourceOutput, e
 	return &plugin.ApiResourceOutput{Body: returnObject}, err
 }
 
-// @Summary Get adf pipelines
-// @Description Get adf_deployment pipelines
+// @Summary Get kubernetes namespaces
+// @Description Get kubernetes namespaces
 // @Tags plugins/adf_deployment
 // @Success 200  {object} models.AdfConnection
 // @Failure 400  {string} errcode.Error "Bad Request"
 // @Failure 500  {string} errcode.Error "Internal Error"
-// @Router /plugins/adf_deployment/connections/{connectionId}/pipelines [GET]
-func GetPipelines(input *plugin.ApiResourceInput) (*plugin.ApiResourceOutput, errors.Error) {
+// @Router /plugins/adf_deployment/connections/{connectionId}/namespaces [GET]
+func GetNameSpaces(input *plugin.ApiResourceInput) (*plugin.ApiResourceOutput, errors.Error) {
 	fmt.Println("input.Params: -->", input.Params)
-
-	connection := &models.AdfConnection{}
-	err := connectionHelper.First(connection, input.Params)
-
-	if err != nil {
-		return nil, errors.Default.Wrap(err, "unable to get ADF API client instance")
-	}
-
-	var credentials map[string]interface{}
-	unmarshalErr := json.Unmarshal([]byte(connection.Credentials), &credentials)
-	if unmarshalErr != nil {
-		return nil, errors.BadInput.New("credentials is not a valid json")
-	}
-
+	
 	body := AdfDeploymentTestConnResponse{}
-	body.Success = true
-	body.Message = "success"
-	body.Connection = nil
-	
-	adfPipelinesClient, err  := adfDeploymentHelper.NewAdfPipelinesClient(credentials)
-	if err != nil {
-		body.Success = false
-		body.Message = "Unable to establish connection to ADF"
-		return &plugin.ApiResourceOutput{Body: body, Status: 400}, nil
-	}
 
-	factoryName := credentials["factoryName"].(string)
-	resourceGroupName := credentials["resourceGroupName"].(string)
-
-	pipelines, pipelinesError := adfPipelinesClient.Client.ListByFactory(context.Background(), resourceGroupName, factoryName)
-	if pipelinesError != nil {
-		body.Success = false
-		body.Message = "Unable to establish connection to ADF"
-		return &plugin.ApiResourceOutput{Body: body, Status: 400}, nil
-	}
-
-	var pipelineList = make([]string, len(pipelines.Values()))
-
-	for i, pipeline := range pipelines.Values() {
-		pipelineList[i] = *pipeline.Name
-	
-	}
-
-	return &plugin.ApiResourceOutput{Body: pipelineList, Status: http.StatusOK}, nil
-
+	return &plugin.ApiResourceOutput{Body: body, Status: http.StatusOK}, nil
 }
 
-
-// @Summary Get adf pipeline runs
-// @Description Get adf_deployment pipeline runs
+// @Summary Get kubernetes namespaces
+// @Description Get kubernetes namespaces
 // @Tags plugins/adf_deployment
 // @Success 200  {object} models.AdfConnection
 // @Failure 400  {string} errcode.Error "Bad Request"
 // @Failure 500  {string} errcode.Error "Internal Error"
-// @Router /plugins/adf_deployment/connections/{connectionId}/pipelines/{pipeline}/runs [GET]
-func GetPipelineRuns(input *plugin.ApiResourceInput) (*plugin.ApiResourceOutput, errors.Error) {
+// @Router /plugins/adf_deployment/connections/{connectionId}/{namespace}/deployments [GET]
+func GetDeployments(input *plugin.ApiResourceInput) (*plugin.ApiResourceOutput, errors.Error) {
 	fmt.Println("input.Params: -->", input.Params)
 
-	
-	daysAgo := input.Query.Get("dayAgo")
-
-	if daysAgo == ""{
-		daysAgo = "30"
-	}
-
-	fmt.Println("daysAgo: -->", daysAgo)
-
-
-
-	connection := &models.AdfConnection{}
-	err := connectionHelper.First(connection, input.Params)
-
-	
-
-	if err != nil {
-		return nil, errors.Default.Wrap(err, "unable to get ADF API client instance")
-	}
-
-	
-
-	var credentials map[string]interface{}
-	unmarshalErr := json.Unmarshal([]byte(connection.Credentials), &credentials)
-
-	if unmarshalErr != nil {
-		return nil, errors.BadInput.New("credentials is not a valid json")
-	}
-
-	
-
 	body := AdfDeploymentTestConnResponse{}
-	body.Success = true
-	body.Message = "success"
-	body.Connection = nil
 
-
-	adfPipelineRunsClient, err := adfDeploymentHelper.NewAdfPipelineRunsClient(credentials)
-	if err != nil {
-		fmt.Println("Error PPERROR:", err)
-		body.Success = false
-		body.Message = "Unable to establish connection to ADF"
-		return &plugin.ApiResourceOutput{Body: body, Status: 400}, nil
-	}
-
-	factoryName := credentials["factoryName"].(string)
-	resourceGroupName := credentials["resourceGroupName"].(string)
-	pipelineName := input.Params["pipeline"]
-
-
-	var filters []datafactory.RunQueryFilter
-
-
-	filters = append(filters, datafactory.RunQueryFilter{
-		Operand: "PipelineName",
-		Operator: "Equals",
-		Values: &[]string{pipelineName},
-	})
-
-	daysAgoInt, _ := strconv.Atoi(daysAgo)
-	lastUpdatedAfter := date.Time{Time: time.Now().AddDate(0, 0, -daysAgoInt)} // 30 days ago
-
-	filterParams := datafactory.RunFilterParameters{
-		LastUpdatedAfter:  &lastUpdatedAfter,
-		LastUpdatedBefore: &date.Time{Time: time.Now()},
-		Filters:           &filters,
-	}
-
-
-	pipelineRuns, pipelineRunsError := adfPipelineRunsClient.Client.QueryByFactory(context.Background(), resourceGroupName, factoryName, filterParams)
-
-	if pipelineRunsError != nil {
-		fmt.Println("pipelineRunsError:", pipelineRunsError)
-		body.Success = false
-		body.Message = "Unable to retrieve pipeline runs from ADF"
-		return &plugin.ApiResourceOutput{Body: body, Status: 400}, nil
-	}
-
-	
-
-	var pipelineRunList = make([]PipelineRunReturnObject, len(*pipelineRuns.Value))
-
-	for i, pipelineRun := range *pipelineRuns.Value {
-		pipelineRunList[i] = PipelineRunReturnObject{
-			ID: *pipelineRun.RunID,
-			Status: *pipelineRun.Status,
-		}
-	}
-
-	return &plugin.ApiResourceOutput{Body: pipelineRunList, Status: http.StatusOK}, nil
-
+	return &plugin.ApiResourceOutput{Body: body, Status: http.StatusOK}, nil
 }

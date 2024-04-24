@@ -31,15 +31,7 @@ import (
 )
 
 type AdfApiClient struct {
-	Client datafactory.FactoriesClient
-}
-
-type AdfPipelineRunsClient struct {
-	Client datafactory.PipelineRunsClient
-}
-
-type AdfPipelinesClient struct {
-	Client datafactory.PipelinesClient
+	Client *datafactory.FactoriesClient
 }
 
 func (k *AdfApiClient) TestConnection() error {
@@ -60,12 +52,13 @@ func NewAdfApiClient(credentials map[string]interface{}) (*AdfApiClient, errors.
 		return nil, err
 	}
 
-	var adfApiClient datafactory.FactoriesClient
+	var adfApiClient *datafactory.FactoriesClient
 	var err errors.Error
 
 	if providerType == "azure" {
 		fmt.Println("Creating Azure ADF Client")
 		adfApiClient, err = createAzureClientConfig(credentials)
+
 		if err != nil {
 			return nil, err
 		}
@@ -74,65 +67,6 @@ func NewAdfApiClient(credentials map[string]interface{}) (*AdfApiClient, errors.
 	return &AdfApiClient{
 		Client: adfApiClient,
 	}, nil
-}
-
-func NewAdfPipelinesClient(credentials map[string]interface{})(*AdfPipelinesClient, errors.Error) {
-
-	providerType, ok := credentials["providerType"].(string)
-
-	if providerType == "" || !ok {
-		err := errors.BadInput.New("providerType is not defined")
-		return nil, err
-	}
-
-	clientID := credentials["clientID"].(string)
-	clientSecret := credentials["clientSecret"].(string)
-	tenantID := credentials["tenantID"].(string)
-	subscriptionID := credentials["subscriptionID"].(string)
-
-	authorizer, err := auth.NewClientCredentialsConfig(clientID, clientSecret, tenantID).Authorizer()
-	if err != nil {
-		panic(err.Error())
-	}
-
-	dataFactoryPipelinesClient := datafactory.NewPipelinesClient(subscriptionID)
-	dataFactoryPipelinesClient.Authorizer = authorizer
-
-	return &AdfPipelinesClient{
-		Client: dataFactoryPipelinesClient,
-	}, nil
-
-
-}
-
-func NewAdfPipelineRunsClient(credentials map[string]interface{}) (*AdfPipelineRunsClient, errors.Error) {
-    providerType, ok := credentials["providerType"].(string)
-
-    if providerType == "" || !ok {
-        err := errors.BadInput.New("providerType is not defined")
-        return nil, err
-    }
-
-    clientID := credentials["clientID"].(string)
-    clientSecret := credentials["clientSecret"].(string)
-    tenantID := credentials["tenantID"].(string)
-    subscriptionID := credentials["subscriptionID"].(string)
-
-	
-
-    authorizer, err := auth.NewClientCredentialsConfig(clientID, clientSecret, tenantID).Authorizer()
-    if err != nil {
-        panic(err.Error())
-    }
-
-
-    dataFactoryPipelineRunsClient := datafactory.NewPipelineRunsClient(subscriptionID)
-    dataFactoryPipelineRunsClient.Authorizer = authorizer
-
-    return &AdfPipelineRunsClient{
-        Client: dataFactoryPipelineRunsClient,
-    }, nil
-
 }
 
 func NewKubeApiClient(credentials map[string]interface{}) (*AdfApiClientSet, errors.Error) {
@@ -168,13 +102,13 @@ func NewKubeApiClient(credentials map[string]interface{}) (*AdfApiClientSet, err
 	}, nil
 }
 
-func createAzureClientConfig(creds map[string]interface{}) (datafactory.FactoriesClient, errors.Error) {
+func createAzureClientConfig(creds map[string]interface{}) (*datafactory.FactoriesClient, errors.Error) {
 	clientID := creds["clientID"].(string)
 	clientSecret := creds["clientSecret"].(string)
 	tenantID := creds["tenantID"].(string)
 	subscriptionID := creds["subscriptionID"].(string)
-	// factoryName := creds["factoryName"].(string)
-	// resourceGroupName := creds["resourceGroupName"].(string)
+	factoryName := creds["factoryName"].(string)
+	resourceGroupName := creds["resourceGroupName"].(string)
 
 	authorizer, err := auth.NewClientCredentialsConfig(clientID, clientSecret, tenantID).Authorizer()
 	if err != nil {
@@ -184,7 +118,19 @@ func createAzureClientConfig(creds map[string]interface{}) (datafactory.Factorie
 	dataFactoryClient := datafactory.NewFactoriesClient(subscriptionID)
 	dataFactoryClient.Authorizer = authorizer
 
-	return dataFactoryClient, nil
+
+	df, err := dataFactoryClient.Get(context.Background(), resourceGroupName, factoryName, "")
+	if err != nil {
+		return nil, errors.Default.New("Unable to establish connection to Azure Data Factory Resource Group")
+	}
+
+
+	fmt.Printf("Data Factory Name: %v\n", *df.Name)
+	fmt.Printf("Data Factory ID: %v\n", *df.ID)
+
+	
+
+	return &dataFactoryClient, nil
 }
 
 

@@ -162,12 +162,12 @@ func (p AdfDeployment) ApiResources() map[string]map[string]plugin.ApiResourceHa
 			"PATCH":  api.PatchConnection,
 			"DELETE": api.DeleteConnection,
 		},
-		"connections/:connectionId/pipelines": {
-			"GET": api.GetPipelines,
+		"connections/:connectionId/namespaces": {
+			"GET": api.GetNameSpaces,
 		},
-		// "connections/:connectionId/:pipeline/pipelineruns": {
-		// 	"GET": api.GetPipelineRuns,
-		// },
+		"connections/:connectionId/:namespace/deployments": {
+			"GET": api.GetDeployments,
+		},
 		"connections/:connectionId/proxy/rest/*path": {
 			"GET": api.Proxy,
 		},
