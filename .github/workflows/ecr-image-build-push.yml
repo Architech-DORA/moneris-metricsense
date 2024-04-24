@@ -54,7 +54,8 @@ jobs:
           docker buildx create --use --name=builder
           docker buildx inspect --bootstrap
           docker buildx build  --cache-from type=registry,ref=${{ env.ECR_NAME }}/moneris-devlake:amd64-builder --tag ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/moneris-devlake:amd64-builder --platform linux/amd64 --target builder --push ./backend
-
+          df -h
+          
   build-and-push-base:
     name: Build and Push moneris-devlake base
     runs-on: ubuntu-latest
@@ -94,6 +95,7 @@ jobs:
           docker buildx create --use --name=builder
           docker buildx inspect --bootstrap
           docker buildx build --cache-from type=registry,ref=${{ env.ECR_NAME }}/moneris-devlake:base --tag ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/moneris-devlake:base --platform linux/amd64,linux/arm64 --target base --push ./backend
+          df -h
   build-devlake:
     needs: build-and-push-builder
     name: Build and cache devlake
@@ -151,7 +153,8 @@ jobs:
             --target build \
             --platform linux/${{ matrix.platform }} \
             --tag ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/moneris-devlake:build-cache-${{ matrix.platform }} \
-            ./backend          
+            ./backend
+            df -h          
   build-and-push-devlake:
     needs: [build-devlake, build-and-push-base]
     name: Build and Push devlake image
@@ -222,6 +225,7 @@ jobs:
             --tag ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${{ steps.get_push_tags.outputs.TAGS }} \
             --push \
            ./backend
+           df -h
       - name: Clear cache
         uses: actions/github-script@v6
         if: always()
@@ -266,6 +270,7 @@ jobs:
           curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
           unzip awscliv2.zip
           sudo ./aws/install --update
+          df -h
       
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -300,4 +305,5 @@ jobs:
             --push \
             --tag ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${{ steps.get_push_tags.outputs.TAGS }} \
             --platform linux/amd64,linux/arm64 \
-            ./${{ matrix.build.context }}  
+            ./${{ matrix.build.context }}
+          df -h 
