@@ -19,5 +19,3 @@
 import { request } from '@/utils';
 
 export const getAdfPipelines = (prefix: string) => request(`${prefix}/pipelines`);
-
-export const getAdfPipelineRuns = (prefix: string) => request(`${prefix}/pipelineruns`);

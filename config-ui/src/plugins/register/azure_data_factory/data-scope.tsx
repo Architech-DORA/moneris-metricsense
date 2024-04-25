@@ -31,8 +31,8 @@ interface Props {
 export const AdfPipelineDataScope = ({ connectionId, selectedItems, onChangeItems }: Props) => {
   return (
     <>
-      <h3>Deployments *</h3>
-      <p>Select the deployments you would like to sync.</p>
+      <h3>Pipelines *</h3>
+      <p>Select the pipelines you would like to sync.</p>
       <MillerColumns connectionId={connectionId} selectedItems={selectedItems} onChangeItems={onChangeItems} />
       {/* <DataScopeMillerColumns
         columnCount={1}

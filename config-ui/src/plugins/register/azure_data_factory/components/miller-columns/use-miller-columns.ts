@@ -70,24 +70,12 @@ export const useMillerColumns = ({ connectionId }: UseMillerColumnsProps) => {
     })();
   }, [customPrefix]);
 
-  const onExpand = useCallback(
-    async (id: McsID) => {
-      const res = await API.getAdfPipelineRuns(`${customPrefix}/${id}`);
-
-      const loaded = !res.length || res.length < DEFAULT_PAGE_SIZE;
-      setLoaded(loaded, id, 2);
-      setItems([...items, ...formatDeploymentItems(res, id)]);
-    },
-    [items, customPrefix],
-  );
-
   return useMemo(
     () => ({
       items,
       getHasMore(id: McsID | null) {
-        return !loadedIds.includes(id ?? 'root');
-      },
-      onExpand,
+        return false
+      }
     }),
     [items, loadedIds],
   );

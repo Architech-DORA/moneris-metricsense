@@ -36,7 +36,7 @@ interface Props extends UseMillerColumnsProps {
 export const MillerColumns = ({ connectionId, selectedItems, onChangeItems }: Props) => {
   const [selectedIds, setSelectedIds] = useState<McsID[]>([]);
 
-  const { items, getHasMore, onExpand } = useMillerColumns({
+  const { items, getHasMore } = useMillerColumns({
     connectionId,
   });
 
@@ -76,10 +76,8 @@ export const MillerColumns = ({ connectionId, selectedItems, onChangeItems }: Pr
     <>
       <MillerColumnsSelect
         items={items}
-        getCanExpand={(it: any) => it.type === 'namespace'}
         getHasMore={getHasMore}
-        onExpand={onExpand}
-        columnCount={2}
+        columnCount={1}
         columnHeight={300}
         renderTitle={renderTitle}
         renderLoading={renderLoading}
