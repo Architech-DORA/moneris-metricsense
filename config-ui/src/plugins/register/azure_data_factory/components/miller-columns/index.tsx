@@ -65,7 +65,7 @@ export const MillerColumns = ({ connectionId, selectedItems, onChangeItems }: Pr
   };
 
   const renderTitle = (column: McsColumn) => {
-    return !column.parentId && <S.ColumnTitle>Namespaces</S.ColumnTitle>;
+    return !column.parentId && <S.ColumnTitle>Pipelines</S.ColumnTitle>;
   };
 
   const renderLoading = () => {

@@ -16,14 +16,14 @@
  *
  */
 
-import { useEffect, useMemo, useState } from 'react';
-import { IconName } from '@blueprintjs/core';
-import { PluginConfig, PluginType } from '@/plugins';
-import * as API from '@/pages/project/home/api';
+import DiagramSanKeySvg from '@/images/icons/diagram-sankey.svg';
 import HouseSvg from '@/images/icons/house.svg';
 import MapSvg from '@/images/icons/map.svg';
-import DiagramSanKeySvg from '@/images/icons/diagram-sankey.svg';
+import * as API from '@/pages/project/home/api';
+import { PluginConfig, PluginType } from '@/plugins';
 import { request } from '@/utils';
+import { IconName } from '@blueprintjs/core';
+import { useEffect, useMemo, useState } from 'react';
 
 export type MenuItemType = {
   key: string;
@@ -82,17 +82,17 @@ export const useMenu = () => {
           },
         ],
       },
-      {
-        key: 'dora-metrics',
-        children: [
-          {
-            key: 'dora-metrics',
-            title: 'DORA Metrics',
-            icon: 'chart',
-            path: '/dora-metrics',
-          },
-        ],
-      },
+      //   {
+      //     key: 'dora-metrics',
+      //     children: [
+      //       {
+      //         key: 'dora-metrics',
+      //         title: 'DORA Metrics',
+      //         icon: 'chart',
+      //         path: '/dora-metrics',
+      //       },
+      //     ],
+      //   },
       {
         key: 'connection',
         title: 'Connections',

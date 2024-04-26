@@ -35,7 +35,7 @@ export const Wrapper = styled.div`
     flex-direction: column;
     align-items: center;
     padding: 16px 0;
-    width: 120px;
+    width: 140px;
     border: 2px solid transparent;
     cursor: pointer;
     transition: all 0.2s linear;
